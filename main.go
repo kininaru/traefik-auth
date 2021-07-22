@@ -14,8 +14,20 @@
 
 package main
 
-import casdoor "github.com/Kininaru/traefik-auth/casdoor"
+import (
+	"fmt"
+	"net/http"
+
+	"github.com/Kininaru/traefik-auth/casdoor"
+)
 
 func main() {
-	config :=
+	config := casdoor.NewConfig()
+	config.Validate()
+	server := casdoor.NewServer(config)
+	http.HandleFunc("/", server.DefaultHandler)
+	fmt.Printf("traefik auth will listen on port %d\n", config.Port)
+	if err := http.ListenAndServe(fmt.Sprintf(":%d", config.Port), nil); err != nil {
+		panic(err)
+	}
 }
